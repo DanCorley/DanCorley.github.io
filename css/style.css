@@ -324,6 +324,11 @@ h5, .h5 {
 h6, .h6 {
   font-size: 1rem; }
 
+ion-icon {
+  font-size: 64px;
+  --ionicon-stroke-width: 20px;
+}
+
 .lead {
   font-size: 1.25rem;
   font-weight: 300; }
@@ -8792,8 +8797,12 @@ h1, h2, h3, h4, h5,
     background: #3e64ff; }
     .services-1:hover .icon i {
       color: #fff; }
+    .services-1:hover p {
+    color: #fff; }
+    .services-1:hover ion-icon {
+    color: #fff; }
     .services-1:hover h3 {
-      color: #000000; }
+      color: #fff; }
       .services-1:hover h3:after {
         background: #000000; }
 
