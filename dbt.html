@@ -1,0 +1,162 @@
+<!doctype html>
+
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+
+<title>Review Analytics Engineering with dbt</title>
+
+
+<!--[if lt IE 9]>
+<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<link rel="shortcut icon" type="image/x-icon" href="https://import.cdn.thinkific.com/342803%2Fcustom_site_themes%2Fid%2FxtSojZNSOOR3Xd7EmVmK_Vector.png">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<meta name="description" content="Review dbt fundamentals">
+<style>
+
+
+body {
+  padding-left: 15%;
+  padding-right: 15%;
+}
+
+p, h1, h2, li {
+  font-family: Source Sans Pro;
+}
+
+pre {
+  background: #002451;
+  display: block;
+  padding: .5em .5em .5em 5em;
+  max-width: 50%;
+  font-family: SFMono-Regular;
+  border-radius: 5px;
+}
+
+.other-pre {
+  background: whitesmoke;
+  border-style: solid;
+  border-width: 1px;
+}
+
+code {
+  color: whitesmoke;
+}
+
+.other-code {
+  color: black;
+}.hljs-bullet,
+.hljs-string {
+  color: #d1f1a9;
+}.hljs-number {
+  color: #ffc58f;
+}
+.sql-pink{
+  color: #ff00ff;
+}
+.sql-green{
+  color: #0a885a;
+}
+.sql-blue{
+  color: #2626ff;
+}
+
+.no-ul {
+  text-decoration: none;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div id="toc_container">
+  <p class="toc_title">Contents</p>
+    <ol class="toc_list">
+      <li><a href="#welcome" class="no-ul">Welcome to dbt Fundamentals</a>
+      <li><a href="#whois" class="no-ul">Who is an Analytics engineer?</a>
+      <li><a href="#setup" class="no-ul">Set up dbt Cloud</a>
+      <li><a href="#models" class="no-ul">Models</a>
+      <li><a href="#tests" class="no-ul">Tests</a>
+      <li><a href="#docs" class="no-ul">Documentation</a>
+      <li><a href="#sources" class="no-ul">Sources</a>
+      <li><a href="#deploy" class="no-ul">Deployment</a>
+      <li><a href="#jinja" class="no-ul">Jinja Primier</a>
+      <li><a href="#macros" class="no-ul">Macros</a>
+      <li><a href="#packages" class="no-ul">Packages</a>
+      <li><a href="#material" class="no-ul">Materializations</a>
+      <li><a href="#analysis" class="no-ul">Analyses and Seeds</a>
+      </ol>
+</div>
+
+<a href="https://discourse.getdbt.com/t/how-we-structure-our-dbt-projects/355">How to Structure Projects</a>
+<br>
+<a href="https://discourse.getdbt.com/t/on-the-limits-of-incrementality/303">On the limits of incrementality</a>
+
+
+
+<h1 id="packages">11. Packages</h1>
+
+
+<h2></h2>
+<p><strong>Packages</strong> are a tool for importing models and macros into your dbt Project. These may have been written in by a coworker or someone else in the dbt community that you have never met. Fishtown Analytics maintains a site called <a href="https://hub.getdbt.com/">hub.getdbt.com</a> for sharing open-source packages that you can install in your project. Packages can also be imported directly from GitHub, GitLab, or another site or from a subfolder in your dbt project.</p>
+<h2 id="anchor-name">Installing Packages</h2>
+<ul>
+<li>Packages are configured in the root of your dbt project in a file called <code>packages.yml</code>.</li>
+<li>You can adjust the version to be compatible with your working version of dbt. Read the packages documentation to determine the version to use.</li>
+<li>Packages are then installed with the command <code>dbt deps</code>.</li>
+</ul>
+<p><strong>Example: Adding dbt_utils and snowflake_spend to your dbt project</strong></p>
+<p><strong>packages.yml</strong></p>
+<pre><code class="language-yaml"><span>packages:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">package:</span> <span class="hljs-string">fishtown-analytics/dbt_utils</span>
+    <span class="hljs-attr">version:</span> <span class="hljs-number">0.6</span><span class="hljs-number">.2</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">package:</span> <span class="hljs-string">gitlabhq/snowflake_spend</span>
+    <span class="hljs-attr">version:</span> <span class="hljs-number">1.2</span><span class="hljs-number">.0</span>
+</code></pre>
+<p><code>dbt deps</code></p>
+<h2>Using Macros from a Package</h2>
+<ul>
+<li>The  name where you want to jump</li>
+<li>After importing a package, your dbt project now has access to all the macros from that package.</li>
+<li>The documentation of that particular package is the best place to learn how to use those packages.</li>
+<li>When you want to reference a macro in a package, you must reference that package and then select the particular macro. (e.g. <code style="color: red; background: lightgray; padding: .25em; border-radius: 5px">dbt_utils.date_spine</code>)</li>
+</ul>
+<p><strong>Example - The following snippet will reference the dbt_utils package and use the date_spine macro.</strong></p>
+<pre class="other-pre"><code class="other-code" >{{ dbt_utils.date_spine(
+    <span class="sql-pink">datepart</span>=<span class="sql-blue">"day",</span>
+    <span class="sql-pink">start_date</span>="to_date(<span class="sql-green">'01/01/2016'</span>, ‘mm/dd/yyyy')",
+&nbsp; &nbsp; end_date="dateadd(week, 1, current_date)"
+    )
+}}
+</code></pre>
+<h2>Using Models from a Package</h2>
+<ul>
+<li>After importing a package, your dbt project now has access to all the models from that package.</li>
+<li>The documentation of that particular packages is the best place to learn how to use those packages.</li>
+<li>Those models will then become part of your dbt project. They will be build when you run dbt run and can be viewed in documentation as part of your DAG and text-based documentation as well.</li>
+</ul>
+
+
+<p><strong>Example - The following DAG below shows all of the snowflake_spend model in gray</strong></p>
+<p>
+  <a href="https://files.cdn.thinkific.com/file_uploads/342803/images/a49/aed/a24/snowflake_spend_dag.png">
+    <img src="https://files.cdn.thinkific.com/file_uploads/342803/images/a49/aed/a24/snowflake_spend_dag.png" style="max-width: 75em; width: 100% " class="fr-fic fr-dib">
+  </a>
+</p>
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/languages/yaml.min.js"></script>  
+<script>hljs.initHighlightingOnLoad();</script> 
+</body>
+</html>
